@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODBURI, {
+mongoose.connect("mongodb+srv://9922172752:9922172752@start.mg0qd.mongodb.net/?retryWrites=true&w=majority&appName=start ", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {

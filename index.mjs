@@ -5,6 +5,8 @@ import xlsx from "xlsx";
 import bodyParser from "body-parser";
 import path from "path";
 import fs from "fs";
+import dotenv from 'dotenv';
+dotenv.config();
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 
 // MongoDB connection
-mongoose.connect("mongodb+srv://9922172752:9922172752@start.mg0qd.mongodb.net/?retryWrites=true&w=majority&appName=start", {
+mongoose.connect(process.env.MONGODBURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
@@ -27,7 +29,6 @@ mongoose.connect("mongodb+srv://9922172752:9922172752@start.mg0qd.mongodb.net/?r
     console.error("MongoDB connection error:", error);
     process.exit(1);
 });
-
 // Schema for Instagram Data
 const DataSchema = new mongoose.Schema(
     [{

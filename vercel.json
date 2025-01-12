@@ -2,18 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/upload.js",
+      "src": "/backend/api/upload.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/upload",
-      "dest": "/api/upload.js"
+      "src": "/backend/api/upload",
+      "dest": "/backend/api/upload.js"
     },
     {
       "src": "/",
-      "dest": "/public/index.html"
+      "dest": "/backend/public/index.html"
     }
   ]
 }

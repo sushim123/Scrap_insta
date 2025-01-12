@@ -12,7 +12,7 @@
     "multer": "^1.4.3",
     "xlsx": "^0.17.2",
     "dotenv": "^10.0.0"
-  },
+  },"type": "module",
   "devDependencies": {
     "vercel": "^23.0.0"
   }

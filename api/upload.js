@@ -10,7 +10,7 @@ dotenv.config();
 // MongoDB Schema
 const instagramDataSchema = new mongoose.Schema({
   instagram_id: { type: String },
-  username: { type: String },
+  username: { type: String , unique: true},
   full_name: { type: String },
   profile_link: { type: String },
   avatar_pic: { type: String },
@@ -109,21 +109,44 @@ export default async function handler(req, res) {
 
         // Insert the mapped data into the database
         try {
-          const savedData = await InstagramData.bulkWrite(
-            mappedData.map(item => ({
-              updateOne: {
-                filter: { instagram_id: item.instagram_id },
-                update: { $set: item },
-                upsert: true, // Insert new or update existing based on instagram_id
-              },
-            }))
-          );
-
-          res.status(200).json({ message: 'File uploaded and data saved', data: savedData });
+          // Get all existing usernames from the database
+          const existingUsernames = await InstagramData.find(
+            { username: { $in: mappedData.map(item => item.username) } },
+            { username: 1, _id: 0 }
+          ).lean();
+        
+          const existingUsernameSet = new Set(existingUsernames.map(user => user.username));
+        
+          // Log usernames that already exist
+          mappedData.forEach(item => {
+            if (existingUsernameSet.has(item.username)) {
+              console.log(`Username already exists: ${item.username}`);
+            }
+          });
+        
+          // Filter out records with existing usernames
+          const newRecords = mappedData.filter(item => !existingUsernameSet.has(item.username));
+        
+          if (newRecords.length > 0) {
+            const savedData = await InstagramData.bulkWrite(
+              newRecords.map(item => ({
+                updateOne: {
+                  filter: { username: item.username }, 
+                  update: { $setOnInsert: item }, 
+                  upsert: false, 
+                },
+              }))
+            );
+        
+            res.status(200).json({ message: 'File uploaded and data saved', data: savedData });
+          } else {
+            res.status(200).json({ message: 'No new data to save. All usernames already exist.' });
+          }
         } catch (err) {
           console.error('Error saving data to database:', err);
           res.status(500).send('Error saving data to database');
         }
+        
       });
     } catch (err) {
       console.error('Error connecting to database:', err);

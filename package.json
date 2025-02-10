@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "node app.js",
+    "dev": "nodemon node app.js",
     "deploy": "vercel --prod"
   },
   "dependencies": {
@@ -11,6 +11,7 @@
     "express": "^4.17.1",
     "mongoose": "^6.3.0",
     "multer": "^1.4.3",
+    "nodemon": "^3.1.9",
     "xlsx": "^0.17.2"
   },
   "type": "module",

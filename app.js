@@ -88,6 +88,32 @@ const convertToBoolean = (value) => {
   if (value === "NO") return false;
   return value; // Return the original value if it's not "YES" or "NO"
 };
+app.get("/api/data", async (req, res) => {
+  try {
+    const data = await InstagramData.find({});
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+app.get("/api/data/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+    const users = await InstagramData.find({
+      username: { $regex: username, $options: "i" },
+    });
+    if (users.length === 0) {
+      return res.json({ message: "no match found " });
+    }
+   
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // File upload route
 app.post("/api/upload", upload.single("file"), async (req, res) => {
@@ -145,19 +171,17 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
     );
 
     if (filteredData.length === 0) {
-      return res
-        .status(200)
-        .json({ message: "No new data to insert. All records are duplicates." });
+      return res.status(200).json({
+        message: "No new data to insert. All records are duplicates.",
+      });
     }
 
     // Save filtered data to MongoDB
     const savedData = await InstagramData.insertMany(filteredData);
-    res
-      .status(200)
-      .json({
-        message: "File uploaded and unique data saved to database",
-        data: savedData,
-      });
+    res.status(200).json({
+      message: "File uploaded and unique data saved to database",
+      data: savedData,
+    });
   } catch (err) {
     console.error("Error saving data:", err);
     res.status(500).send("Error saving data to database");
